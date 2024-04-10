@@ -36,6 +36,13 @@ public class UserService {
         user.add100Point();
     }
 
+    @Transactional(readOnly = true)
+    public void checkNicknameDuplicate(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.EXIST_USER_NICKNAME);
+        }
+    }
+
     // 유저 이름 변경
     public void changeUserNickname(Long userId, String nickname){
         User user = getUserOrThrow(userId);
