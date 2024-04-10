@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.drugbox.domain.Authority.ROLE_USER;
 
@@ -32,6 +34,9 @@ public class User extends BaseEntity {
     private String providerAccessToken;
     private String oauthId;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<UserDrugbox> userDrugboxes = new ArrayList<>();
 
     @Column(unique = true, length = 20)
     private String nickname;

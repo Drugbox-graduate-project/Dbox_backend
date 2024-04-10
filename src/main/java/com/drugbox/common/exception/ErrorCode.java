@@ -33,6 +33,10 @@ public enum ErrorCode {
     NOT_FOUND_DRUGINFO(HttpStatus.NOT_FOUND, "해당 약 상세정보를 찾을 수 없습니다"),
     DRUG_NOT_IN_DISPOSAL_LIST(HttpStatus.CONFLICT, "해당 약은 폐의약품 리스트에 없습니다."),
 
+    // Invitation 예외
+    NOT_FOUND_INVITATION(HttpStatus.NOT_FOUND, "해당 drugbox로의 초대를 찾을 수 없습니다"),
+    USER_NOT_INVITED(HttpStatus.CONFLICT, "해당 유저는 해당 구급상자 그룹에 초대되지 않았습니다."),
+
     // 이미지 예외
     IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "이미지 파일은 10MB이하여야 합니다."),
     IMAGE_TYPE_INVALID(HttpStatus.BAD_REQUEST, "이미지 파일 타입이 유효하지 않습니다.");
