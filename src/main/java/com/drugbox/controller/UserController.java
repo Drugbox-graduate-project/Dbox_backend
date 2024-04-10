@@ -34,8 +34,15 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PatchMapping("/setting/name")
-    public ResponseEntity<Void> changeUserNickname(@RequestParam String nickname){
+
+    @GetMapping("setting/nickname/{nickname}")
+    public ResponseEntity<Void> checkNicknameDuplicate(@PathVariable String nickname) {
+        userService.checkNicknameDuplicate(nickname);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PatchMapping("/setting/nickname/{nickname}")
+    public ResponseEntity<Void> changeUserNickname(@PathVariable String nickname){
         userService.changeUserNickname(SecurityUtil.getCurrentUserId(),nickname);
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -5,7 +5,6 @@ import com.drugbox.common.oauth.platform.google.GoogleLoginParams;
 import com.drugbox.dto.request.UserLoginRequest;
 import com.drugbox.dto.response.IdResponse;
 import com.drugbox.service.AuthService;
-import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
