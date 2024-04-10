@@ -96,7 +96,7 @@ jobs:
           script_stop: true
           script: |
             sudo docker-compose -f $COMPOSE down
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/drugbox-grad 
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/drugbox-grad 
             sudo docker-compose -f $COMPOSE up -d
 
 
