@@ -32,6 +32,7 @@ public enum ErrorCode {
     NOT_FOUND_DRUG(HttpStatus.NOT_FOUND, "해당 약 정보를 찾을 수 없습니다."),
     NOT_FOUND_DRUGINFO(HttpStatus.NOT_FOUND, "해당 약 상세정보를 찾을 수 없습니다"),
     DRUG_NOT_IN_DISPOSAL_LIST(HttpStatus.CONFLICT, "해당 약은 폐의약품 리스트에 없습니다."),
+    DRUG_COUNT_SHOULD_BE_ABOVE_ZERO(HttpStatus.BAD_REQUEST, "추가하는 약의 count는 0보다 커야 합니다."),
 
     // Invitation 예외
     NOT_FOUND_INVITATION(HttpStatus.NOT_FOUND, "해당 drugbox로의 초대를 찾을 수 없습니다"),
