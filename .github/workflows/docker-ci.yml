@@ -40,9 +40,11 @@ jobs:
         uses: jsdaniell/create-json@v1.2.2
         with:
           name: "drugbox_firebase.json"
-          json: ${{ secrets.FIREBASE_JSON }}
+          json: ${{ secrets.GCP_CREDENTIAL_JSON }}
           dir: 'src/main/resources'
-          
+
+      - name: checkout
+        uses: actions/checkout@v4    
       # Google credentials
       - name: google-credentials
         uses: 'google-github-actions/auth@v2'
@@ -50,7 +52,7 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIAL_JSON }}'
           project_id: '${{ secrets.GCP_PROJECT_ID }}'
           #workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
-          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+          #service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
