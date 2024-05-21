@@ -44,6 +44,10 @@ public class User extends BaseEntity {
     private String image;
     @Builder.Default
     private int point = 0;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "notification_setting_id", referencedColumnName = "notification_setting_id")
+    @Builder.Default
+    private NotificationSetting notificationSetting = new NotificationSetting();
 
     public void setProviderAccessToken(String token){ this.providerAccessToken = token; }
     public void setImage(String image){ this.image = image; }

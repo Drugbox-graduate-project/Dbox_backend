@@ -52,7 +52,7 @@ public class DrugController {
     @PatchMapping("/disposal")
     public ResponseEntity<Void> disposeDrug(@RequestParam(value="drugboxId") Long drugboxId,
                                             @RequestParam(value="drugId") Long drugId){
-        drugService.disposeDrug(drugboxId,drugId);
+        drugService.disposeDrug(SecurityUtil.getCurrentUserId(), drugboxId,drugId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -70,7 +70,7 @@ public class DrugController {
 
     @DeleteMapping("/disposal")
     public ResponseEntity<Void> deleteDrugFromDisposalList(@RequestBody List<DrugUpdateRequest> drugUpdateRequests){
-        drugService.deleteDrugFromDisposalList(drugUpdateRequests);
+        drugService.deleteDrugFromDisposalList(SecurityUtil.getCurrentUserId(), drugUpdateRequests);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

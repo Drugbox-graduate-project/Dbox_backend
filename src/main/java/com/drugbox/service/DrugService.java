@@ -12,10 +12,12 @@ import com.drugbox.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +60,7 @@ public class DrugService {
             saveDrugInfoIfEmpty(request.getName());
 
             ids.add(drug.getId());
-            sendNotificationToAllOtherDrugboxMember(user, drugbox, "약 추가 알림",
+            sendDrugAddedNotificationToAllOtherDrugboxMember(user, drugbox, "약 추가 알림",
                     user.getNickname()+"님이 "+drugbox.getName()+"에 "+drug.getName()+" "
                             +detail.getCount()+"개를 추가했습니다.");
         }
@@ -95,23 +97,29 @@ public class DrugService {
     }
 
     // 의약품 폐기리스트로 옮기기
-    public void disposeDrug(Long drugboxId, Long drugId){
-        getDrugboxOrThrow(drugboxId);
+    public void disposeDrug(Long userId, Long drugboxId, Long drugId){
+        Drugbox drugbox = getDrugboxOrThrow(drugboxId);
         Drug drug = getDrugOrThrowById(drugId);
 
         drug.addToDisposalList();
         drugRepository.save(drug);
+        User user = getUserOrThrow(userId);
+        sendDrugDisposedNotificationToAllOtherDrugboxMember(user, drugbox, "폐기리스트 약 추가 알림",
+                user.getNickname()+"님이 "+drugbox.getName()+"의 "+drug.getName()+"를 폐기리스트로 옮겼습니다.");
     }
 
     // 폐의약품 리스트에서 약 삭제하기
-    public void deleteDrugFromDisposalList(List<DrugUpdateRequest> drugUpdateRequests){
+    public void deleteDrugFromDisposalList(Long userId, List<DrugUpdateRequest> drugUpdateRequests){
+        User user = getUserOrThrow(userId);
         for(DrugUpdateRequest updateRequest : drugUpdateRequests){
-            getDrugboxOrThrow(updateRequest.getDrugboxId());
+            Drugbox drugbox = getDrugboxOrThrow(updateRequest.getDrugboxId());
             for(Long drugId : updateRequest.getDrugIds()){
                 Drug drug = getDrugOrThrowById(drugId);
                 if(!drug.isInDisposalList()){
                     throw new CustomException(ErrorCode.DRUG_NOT_IN_DISPOSAL_LIST);
                 }
+                sendDrugDisposedNotificationToAllOtherDrugboxMember(user, drugbox, "폐기리스트 약 삭제 알림",
+                        user.getNickname()+"님이 "+drugbox.getName()+"의 "+drug.getName()+"를 폐기리스트에서 삭제했습니다.");
                 drugRepository.delete(drug);
             }
         }
@@ -192,12 +200,25 @@ public class DrugService {
         }
     }
 
-    private void sendNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
-        List<UserDrugbox> userDrugboxes = drugbox.getUserDrugboxes();
-        for(UserDrugbox ud: userDrugboxes) {
-            if(ud.getUser() == user)
+    private void sendDrugDisposedNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
+        List<User> users = drugbox.getUserDrugboxes().stream()
+                .map(ud -> ud.getUser())
+                .collect(Collectors.toList());
+        for(User u: users) {
+            if(u == user || !u.getNotificationSetting().isDrugDisposedNotificationEnabled())
                 continue;
-            sendNotification(ud.getUser(), title, message);
+            sendNotification(u, title, message);
+        }
+    }
+
+    private void sendDrugAddedNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
+        List<User> users = drugbox.getUserDrugboxes().stream()
+                .map(ud -> ud.getUser())
+                .collect(Collectors.toList());
+        for(User u: users) {
+            if(u == user || !u.getNotificationSetting().isDrugAddedNotificationEnabled())
+                continue;
+            sendNotification(u, title, message);
         }
     }
 
@@ -208,5 +229,25 @@ public class DrugService {
                 .message(message)
                 .build();
         notificationService.makeNotification(notification);
+    }
+
+    @Scheduled(cron="0 0 9 * * *", zone = "Asia/Seoul")
+    public void sendDrugExpiredNotification(){
+        List<Drug> drugs = drugRepository.findAllExpired(LocalDate.now());
+        for(Drug drug : drugs){
+            Drugbox drugbox = drug.getDrugbox();
+            sendNotificationToAllDrugboxMember(drugbox, "유통기한 초과 알림",
+                    drugbox.getName()+"에 들어있는 "+drug.getName()+"의 유통기한이 지났습니다.");
+        }
+    }
+
+    @Scheduled(cron="0 0 9 * * *", zone = "Asia/Seoul")
+    public void sendDrugNearExpiredNotification(){
+        List<Drug> drugs = drugRepository.findAllNearExpired(LocalDate.now());
+        for(Drug drug : drugs){
+            Drugbox drugbox = drug.getDrugbox();
+            sendNotificationToAllDrugboxMember(drugbox, "유통기한 임박 알림",
+                    drugbox.getName()+"에 들어있는 "+drug.getName()+"의 유통기한이 1주일 남았습니다. 교체하세요!");
+        }
     }
 }

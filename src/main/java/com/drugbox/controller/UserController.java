@@ -58,4 +58,22 @@ public class UserController {
         int response = userService.getUserRewardPoints(SecurityUtil.getCurrentUserId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PatchMapping("/setting/notification/expdate")
+    public ResponseEntity<Void> changeIsExpDateNotificationEnabled(@RequestParam boolean isEnabled){
+        userService.changeIsExpDateNotificationEnabled(SecurityUtil.getCurrentUserId(), isEnabled);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PatchMapping("/setting/notification/disposal-drugs")
+    public ResponseEntity<Void> changeIsDrugDisposedNotificationEnabled(@RequestParam boolean isEnabled){
+        userService.changeIsDrugDisposedNotificationEnabled(SecurityUtil.getCurrentUserId(), isEnabled);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PatchMapping("/setting/notification/drug-added")
+    public ResponseEntity<Void> changeIsDrugAddedNotificationEnabled(@RequestParam boolean isEnabled){
+        userService.changeIsDrugAddedNotificationEnabled(SecurityUtil.getCurrentUserId(), isEnabled);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
