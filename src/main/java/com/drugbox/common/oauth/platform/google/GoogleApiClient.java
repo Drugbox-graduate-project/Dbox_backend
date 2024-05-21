@@ -23,13 +23,13 @@ public class GoogleApiClient implements OAuthApiClient { // 구글 로그인 토
     private String authUrl = "https://oauth2.googleapis.com";
     private String apiUrl = "https://www.googleapis.com/drive/v2/files";
 
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    @Value("${google.client-id}")
     private String clientId;
 
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    @Value("${google.client-secret}")
     private String clientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    @Value("${google.redirect-uri}")
     private String redirectUri;
 
     private final RestTemplate restTemplate; // 외부 요청 후 미리 정의해둔 GoogleTokens, GoogleInfoResponse 로 응답값을 받는다
