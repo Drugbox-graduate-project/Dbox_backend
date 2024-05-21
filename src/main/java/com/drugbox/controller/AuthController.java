@@ -9,12 +9,14 @@ import com.drugbox.dto.response.IdResponse;
 import com.drugbox.service.AuthService;
 import com.drugbox.service.FCMTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -33,8 +35,8 @@ public class AuthController {
 
     @GetMapping("/redirect/google") // 백엔드 자체 테스트용
     public ResponseEntity<TokenDto> googleRedirect(@RequestParam("code") String authCode){
-//        return ResponseEntity.ok(authService.getGoogleAccessToken(authCode));
-        System.out.println("\n  AuthCode:" + authCode); return null;
+        log.info("\n  AuthCode:" + authCode);
+        return ResponseEntity.ok(authService.getGoogleAccessToken(authCode));
     }
 
     @PostMapping("/signup/pw")
