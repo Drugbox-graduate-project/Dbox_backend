@@ -39,3 +39,4 @@ out/
 ### classpath ###
 application.properties
 drugbox_firebase.json
+gha-creds-*.json
