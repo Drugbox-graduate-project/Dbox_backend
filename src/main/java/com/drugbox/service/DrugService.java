@@ -200,26 +200,18 @@ public class DrugService {
         }
     }
 
-    private void sendDrugDisposedNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
-        List<User> users = drugbox.getUserDrugboxes().stream()
+    private void sendDrugDisposedNotificationToAllOtherDrugboxMember(User exceptUser, Drugbox drugbox, String title, String message){
+        drugbox.getUserDrugboxes().stream()
                 .map(ud -> ud.getUser())
-                .collect(Collectors.toList());
-        for(User u: users) {
-            if(u == user || !u.getNotificationSetting().isDrugDisposedNotificationEnabled())
-                continue;
-            sendNotification(u, title, message);
-        }
+                .filter(u -> (u != exceptUser) && (u.getNotificationSetting().isDrugDisposedNotificationEnabled()))
+                .forEach(u -> sendNotification(u, title, message));
     }
 
-    private void sendDrugAddedNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
-        List<User> users = drugbox.getUserDrugboxes().stream()
+    private void sendDrugAddedNotificationToAllOtherDrugboxMember(User exceptUser, Drugbox drugbox, String title, String message){
+        drugbox.getUserDrugboxes().stream()
                 .map(ud -> ud.getUser())
-                .collect(Collectors.toList());
-        for(User u: users) {
-            if(u == user || !u.getNotificationSetting().isDrugAddedNotificationEnabled())
-                continue;
-            sendNotification(u, title, message);
-        }
+                .filter(u -> (u != exceptUser) && (u.getNotificationSetting().isDrugAddedNotificationEnabled()))
+                .forEach(u -> sendNotification(u, title, message));
     }
 
     private void sendNotification(User user, String title, String message){

@@ -19,6 +19,7 @@ public class NotificationService {
 
     public void makeNotification(Notification notification){
         notificationRepository.save(notification);
-        fcmTokenService.sendNotification(notification.getTitle(), notification.getMessage() , notification.getUser().getId());
+        fcmTokenService.sendNotification(notification.getTitle(), notification.getMessage(),
+                notification.getUser().getId(), notification.getExtraInfo());
     }
 }

@@ -45,7 +45,7 @@ public class DrugboxService {
         return drugbox.getId();
     }
 
-    // 구급상자 추가하기 (초대)
+    // 구급상자 추가하기 (초대코드)
     public Long addDrugboxByInviteCode(String inviteCode, Long userId){
         User user = getUserOrThrow(userId);
         Drugbox drugbox = drugboxRepository.findByInviteCode(inviteCode)
@@ -53,6 +53,8 @@ public class DrugboxService {
         checkIfUserIsDrugboxMember(user, drugbox);
         UserDrugbox userDrugbox = UserDrugbox.createUserDrugbox(user, drugbox);
         userDrugboxRepository.save(userDrugbox);
+        sendNewMemberNotification(user, drugbox, "멤버 추가 알림",
+                user.getNickname()+"님이 "+drugbox.getName()+"의 멤버로 추가되었습니다.");
         return drugbox.getId();
     }
 
@@ -107,13 +109,9 @@ public class DrugboxService {
                 .invitedDrugbox(drugbox)
                 .build();
         invitationRepository.save(invitation);
-        Notification notification = Notification.builder()
-                .user(invitee)
-                .title("구급상자 초대")
-                .message(invitee.getNickname() + "님이 구급상자(" + drugbox.getName() + ")에 초대되었습니다.")
-                .extraInfo("Invitation ID=" + invitation.getId())
-                .build();
-        notificationRepository.save(notification);
+        sendNotificationWithExtraInfo(invitee, "구급상자 초대",
+                invitee.getNickname() + "님이 구급상자(" + drugbox.getName() + ")에 초대되었습니다.",
+                "Invitation ID=" + invitation.getId());
         return invitation.getId();
     }
 
@@ -126,6 +124,8 @@ public class DrugboxService {
         checkIfUserIsDrugboxMember(invitee, drugbox);
         UserDrugbox userDrugbox = UserDrugbox.createUserDrugbox(invitee, drugbox);
         userDrugboxRepository.save(userDrugbox);
+        sendNewMemberNotification(invitee, drugbox, "멤버 추가 알림",
+                invitee.getNickname()+"님이 "+drugbox.getName()+"의 멤버로 추가되었습니다.");
     }
 
     // 예외 처리 - 존재하는 User 인가
@@ -188,5 +188,22 @@ public class DrugboxService {
                 .message(message)
                 .build();
         notificationService.makeNotification(notification);
+    }
+
+    private void sendNotificationWithExtraInfo(User user, String title, String message, String extraInfo){
+        Notification notification = Notification.builder()
+                .user(user)
+                .title(title)
+                .message(message)
+                .extraInfo(extraInfo)
+                .build();
+        notificationService.makeNotification(notification);
+    }
+
+    private void sendNewMemberNotification(User exceptUser, Drugbox drugbox, String title, String message){
+        drugbox.getUserDrugboxes().stream()
+                .map(ud -> ud.getUser())
+                .filter(u -> u != exceptUser)
+                .forEach(u -> sendNotification(u, title, message));
     }
 }

@@ -17,7 +17,7 @@ public class FCMTokenService {
 
     private final StringRedisTemplate tokenRedisTemplate;
 
-    public void sendNotification(String title, String content, Long userId) {
+    public void sendNotification(String title, String content, Long userId, String extraInfo) {
         if(!hasKey(userId)){
             throw new CustomException(ErrorCode.FCM_TOKEN_INVALID);
         }
@@ -31,6 +31,7 @@ public class FCMTokenService {
                 .setToken(token)
                 .setNotification(fcmNotification)
                 .putData("userId", String.valueOf(userId))
+                .putData("extraInfo", extraInfo)
                 .build();
         sendMessage(message);
     }
