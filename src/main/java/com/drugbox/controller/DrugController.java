@@ -36,7 +36,7 @@ public class DrugController {
 
     @PostMapping("")
     public ResponseEntity<List<IdResponse>> addDrugs(@RequestBody @Valid DrugSaveRequest drugSaveRequest) throws IOException, ParseException {
-        List<Long> ids = drugService.addDrugs(drugSaveRequest);
+        List<Long> ids = drugService.addDrugs(drugSaveRequest, SecurityUtil.getCurrentUserId());
         List<IdResponse> response = ids.stream()
                 .map(id -> IdResponse.builder().id(id).build())
                 .collect(Collectors.toList());
@@ -52,7 +52,7 @@ public class DrugController {
     @PatchMapping("/disposal")
     public ResponseEntity<Void> disposeDrug(@RequestParam(value="drugboxId") Long drugboxId,
                                             @RequestParam(value="drugId") Long drugId){
-        drugService.disposeDrug(drugboxId,drugId);
+        drugService.disposeDrug(SecurityUtil.getCurrentUserId(), drugboxId,drugId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -70,7 +70,7 @@ public class DrugController {
 
     @DeleteMapping("/disposal")
     public ResponseEntity<Void> deleteDrugFromDisposalList(@RequestBody List<DrugUpdateRequest> drugUpdateRequests){
-        drugService.deleteDrugFromDisposalList(drugUpdateRequests);
+        drugService.deleteDrugFromDisposalList(SecurityUtil.getCurrentUserId(), drugUpdateRequests);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

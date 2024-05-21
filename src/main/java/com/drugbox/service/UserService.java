@@ -2,6 +2,7 @@ package com.drugbox.service;
 
 import com.drugbox.common.exception.CustomException;
 import com.drugbox.common.exception.ErrorCode;
+import com.drugbox.domain.NotificationSetting;
 import com.drugbox.domain.User;
 import com.drugbox.dto.response.UserDetailResponse;
 import com.drugbox.dto.response.UserEmailResponse;
@@ -64,6 +65,30 @@ public class UserService {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .build();
+    }
+
+    // 푸시 알림 설정 - 유통기한 알림
+    public void changeIsExpDateNotificationEnabled(Long userId, boolean isExpDateNotificationEnabled){
+        User user = getUserOrThrow(userId);
+        NotificationSetting notificationSetting = user.getNotificationSetting();
+        notificationSetting.setIsExpDateNotificationEnabled(isExpDateNotificationEnabled);
+        userRepository.save(user);
+    }
+
+    // 푸시 알림 설정 - 폐기할 의약품 알림
+    public void changeIsDrugDisposedNotificationEnabled(Long userId, boolean isDisposalDrugsNotificationEnabled){
+        User user = getUserOrThrow(userId);
+        NotificationSetting notificationSetting = user.getNotificationSetting();
+        notificationSetting.setIsDrugDisposedNotificationEnabled(isDisposalDrugsNotificationEnabled);
+        userRepository.save(user);
+    }
+
+    // 푸시 알림 설정 - 새 공지사항
+    public void changeIsDrugAddedNotificationEnabled(Long userId, boolean isDrugAddedNotificationEnabled){
+        User user = getUserOrThrow(userId);
+        NotificationSetting notificationSetting = user.getNotificationSetting();
+        notificationSetting.setIsDrugAddedNotificationEnabled(isDrugAddedNotificationEnabled);
+        userRepository.save(user);
     }
 
     private User getUserOrThrow(Long userId) {

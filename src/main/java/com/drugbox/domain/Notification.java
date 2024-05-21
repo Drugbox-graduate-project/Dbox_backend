@@ -29,5 +29,6 @@ public class Notification extends BaseEntity {
 
     private String title;
     private String message;
-    private String extraInfo;
+    @Builder.Default
+    private String extraInfo="";
 }
