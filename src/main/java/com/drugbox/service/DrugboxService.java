@@ -30,6 +30,7 @@ public class DrugboxService {
     private final NotificationRepository notificationRepository;
     private final InvitationRepository invitationRepository;
     private final ImageService imageService;
+    private final NotificationService notificationService;
 
 
     // 구급상자 추가하기 (생성)
@@ -178,5 +179,14 @@ public class DrugboxService {
         if(invitation.getInvitedUser() != invitee){
             throw new CustomException(ErrorCode.USER_NOT_INVITED);
         }
+    }
+
+    private void sendNotification(User user, String title, String message){
+        Notification notification = Notification.builder()
+                .user(user)
+                .title(title)
+                .message(message)
+                .build();
+        notificationService.makeNotification(notification);
     }
 }

@@ -24,6 +24,10 @@ public enum ErrorCode {
     ID_TOKEN_INVALID(HttpStatus.UNPROCESSABLE_ENTITY, "ID Token 값이 잘못되었습니다. OAUTH 로그인을 다시 시도해보세요."),
     QUIT_ERROR(HttpStatus.BAD_REQUEST, "OAUTH 탈퇴 과정 중 에러가 발생했습니다."),
 
+    // FCM Messaging 예외
+    FCM_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "FCM토큰이 null입니다."),
+    FCM_MESSAGE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FCM 메세징 오류"),
+
     // Drugbox 예외
     NOT_FOUND_DRUGBOX(HttpStatus.NOT_FOUND, "해당 drugbox를 찾을 수 없습니다."),
     USER_ALREADY_DRUGBOX_MEMBER(HttpStatus.CONFLICT, "해당 유저가 이미 해당 구급상자 그룹에 속해있습니다."),
