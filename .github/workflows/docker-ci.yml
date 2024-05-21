@@ -33,14 +33,14 @@ jobs:
           echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
         shell: bash
 
-        # 환경 변수 설정 (Firebase)
-      # - name: create-json
-      #   id: create-json
-      #   uses: jsdaniell/create-json@v1.2.2
-      #   with:
-      #     name: ${{ secrets.FIREBASE_JSON_FILENAME }}
-      #     json: ${{ secrets.FIREBASE_JSON }}
-      #     dir: 'src/main/resources'
+      # 환경 변수 설정 (Firebase)
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "drugbox_firebase.json"
+          json: ${{ secrets.FIREBASE_JSON }}
+          dir: 'src/main/resources'
 
 
       # 2. Spring Boot 애플리케이션 빌드
