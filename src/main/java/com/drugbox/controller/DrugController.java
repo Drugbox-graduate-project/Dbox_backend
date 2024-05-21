@@ -36,7 +36,7 @@ public class DrugController {
 
     @PostMapping("")
     public ResponseEntity<List<IdResponse>> addDrugs(@RequestBody @Valid DrugSaveRequest drugSaveRequest) throws IOException, ParseException {
-        List<Long> ids = drugService.addDrugs(drugSaveRequest);
+        List<Long> ids = drugService.addDrugs(drugSaveRequest, SecurityUtil.getCurrentUserId());
         List<IdResponse> response = ids.stream()
                 .map(id -> IdResponse.builder().id(id).build())
                 .collect(Collectors.toList());

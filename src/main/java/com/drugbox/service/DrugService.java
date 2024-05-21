@@ -2,10 +2,7 @@ package com.drugbox.service;
 
 import com.drugbox.common.exception.CustomException;
 import com.drugbox.common.exception.ErrorCode;
-import com.drugbox.domain.Drug;
-import com.drugbox.domain.DrugInfo;
-import com.drugbox.domain.Drugbox;
-import com.drugbox.domain.User;
+import com.drugbox.domain.*;
 import com.drugbox.dto.request.DrugDetailSaveRequest;
 import com.drugbox.dto.request.DrugSaveRequest;
 import com.drugbox.dto.request.DrugUpdateRequest;
@@ -36,12 +33,14 @@ public class DrugService {
     private final UserDrugboxRepository userDrugboxRepository;
 
     private final DrugApiService drugApiService;
+    private final NotificationService notificationService;
 
 
     // 의약품 추가하기
-    public List<Long> addDrugs(DrugSaveRequest request) throws IOException, ParseException {
+    public List<Long> addDrugs(DrugSaveRequest request, Long userId) throws IOException, ParseException {
         Drugbox drugbox = getDrugboxOrThrow(request.getDrugboxId());
         List<Long> ids = new ArrayList<>();
+        User user = getUserOrThrow(userId);
         for(int i=0; i<request.getDetail().size(); i++){
             DrugDetailSaveRequest detail = request.getDetail().get(i);
             if(detail.getCount() <= 0){
@@ -59,6 +58,9 @@ public class DrugService {
             saveDrugInfoIfEmpty(request.getName());
 
             ids.add(drug.getId());
+            sendNotificationToAllOtherDrugboxMember(user, drugbox, "약 추가 알림",
+                    user.getNickname()+"님이 "+drugbox.getName()+"에 "+drug.getName()+" "
+                            +detail.getCount()+"개를 추가했습니다.");
         }
         return ids;
     }
@@ -181,5 +183,30 @@ public class DrugService {
                 .count(drug.getCount())
                 .isInDisposalList(drug.isInDisposalList())
                 .build();
+    }
+
+    private void sendNotificationToAllDrugboxMember(Drugbox drugbox, String title, String message){
+        List<UserDrugbox> userDrugboxes = drugbox.getUserDrugboxes();
+        for(UserDrugbox ud: userDrugboxes) {
+            sendNotification(ud.getUser(), title, message);
+        }
+    }
+
+    private void sendNotificationToAllOtherDrugboxMember(User user, Drugbox drugbox, String title, String message){
+        List<UserDrugbox> userDrugboxes = drugbox.getUserDrugboxes();
+        for(UserDrugbox ud: userDrugboxes) {
+            if(ud.getUser() == user)
+                continue;
+            sendNotification(ud.getUser(), title, message);
+        }
+    }
+
+    private void sendNotification(User user, String title, String message){
+        Notification notification = Notification.builder()
+                .user(user)
+                .title(title)
+                .message(message)
+                .build();
+        notificationService.makeNotification(notification);
     }
 }

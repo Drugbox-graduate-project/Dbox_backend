@@ -81,7 +81,7 @@ public class AuthService {
 
     public TokenDto getGoogleAccessToken(String authCode){
         System.out.println("\n==== Auth Code:"+authCode+"\n");
-        GoogleLoginParams params = new GoogleLoginParams(authCode);
+        GoogleLoginParams params = new GoogleLoginParams(authCode, null);
         return googleLogin(params);
     }
 
@@ -130,7 +130,7 @@ public class AuthService {
         tokenProvider.deleteRefreshToken(accessToken);
     }
 
-    public void quit(String accessToken){
+    public Long quit(String accessToken){
         String userId = tokenProvider.parseSubject(accessToken);
         User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
@@ -139,5 +139,6 @@ public class AuthService {
         }
         tokenProvider.deleteRefreshToken(accessToken);
         userRepository.delete(user);
+        return Long.valueOf(userId);
     }
 }

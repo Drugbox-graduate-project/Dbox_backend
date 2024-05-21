@@ -17,7 +17,7 @@ public class FCMConfig {
 
     @Bean
     FirebaseMessaging init() throws IOException {
-        ClassPathResource resource = new ClassPathResource("test.json");
+        ClassPathResource resource = new ClassPathResource("drugbox_firebase.json");
         InputStream refreshToken = resource.getInputStream();
         FirebaseApp firebaseApp = null;
         List<FirebaseApp> firebaseAppList = FirebaseApp.getApps();
