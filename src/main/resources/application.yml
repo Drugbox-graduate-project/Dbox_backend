@@ -36,6 +36,10 @@ spring:
         auto: false
       stack:
         auto: false
+    gcp:
+      project-id: ${application.spring.cloud.gcp.storage.project-id}
+      credentials:
+        location: classpath:drugbox_firebase.json
 
   security:
     oauth2:
