@@ -34,12 +34,12 @@ jobs:
           echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
         shell: bash
 
-          # GitHub-Actions 에서 설정한 값을 yml 파일에 쓰기
-      - name: make application.yml
-        run: |
-          cd ./src/main/resources
-          echo "${{ secrets.PROPERTIES_YML }}" >> ./application.yml
-        shell: bash
+      #     # GitHub-Actions 에서 설정한 값을 yml 파일에 쓰기
+      # - name: make application.yml
+      #   run: |
+      #     cd ./src/main/resources
+      #     echo "${{ secrets.PROPERTIES_YML }}" >> ./application.yml
+      #   shell: bash
 
 
       # 환경 변수 설정 (Firebase)
