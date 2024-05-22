@@ -124,6 +124,11 @@ jobs:
           envs: APP, COMPOSE
           script_stop: true
           script: |
+            # Find and kill process using port 6379
+            PID=$(sudo lsof -t -i:6379)
+            if [ -n "$PID" ]; then
+              sudo kill -9 $PID
+            fi
             sudo docker-compose -f $COMPOSE down
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/drugbox-grad 
             sudo docker-compose -f $COMPOSE up -d
