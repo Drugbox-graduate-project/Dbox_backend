@@ -40,3 +40,4 @@ out/
 application.properties
 drugbox_firebase.json
 gha-creds-*.json
+application.yml
