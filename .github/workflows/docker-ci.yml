@@ -32,13 +32,9 @@ jobs:
           
           # GitHub-Actions 에서 설정한 값을 application.properties 파일에 쓰기
           echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
-        shell: bash
-
-      - name: make application.yml
-        run:
-          touch ./application.yml
-
+         
           # GitHub-Actions 에서 설정한 값을 yml 파일에 쓰기
+          touch ./application.yml
           echo "${{ secrets.PROPERTIES_YML }}" >> ./application.yml
         shell: bash
 
