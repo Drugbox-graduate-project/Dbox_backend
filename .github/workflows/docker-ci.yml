@@ -24,9 +24,10 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-
+      
       - name: make application.yml
         run: |
+          mkdir ./src/main/resources
           cd ./src/main/resources
           touch ./application.yml
           
@@ -36,6 +37,7 @@ jobs:
       
       - name: make application.properties
         run: |
+          cd ./src/main/resources
           touch ./application.properties
           
           # GitHub-Actions 에서 설정한 값을 application.properties 파일에 쓰기
