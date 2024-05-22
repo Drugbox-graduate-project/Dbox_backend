@@ -32,9 +32,8 @@ jobs:
           
           # GitHub-Actions 에서 설정한 값을 application.properties 파일에 쓰기
           echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
+        shell: bash
 
-      - name: checkout
-        uses: actions/checkout@v4
           # GitHub-Actions 에서 설정한 값을 yml 파일에 쓰기
       - name: make application.yml
         run: |
