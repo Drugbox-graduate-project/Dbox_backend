@@ -1,14 +1,14 @@
 package com.drugbox.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 @Builder
 public class DrugDetailResponse {
     private String name;
-    private List<DrugResponse> drugResponseList;
+    private List<DrugResponse> drugResponses;
     private String effect;
 }

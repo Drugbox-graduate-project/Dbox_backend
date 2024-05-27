@@ -7,6 +7,7 @@ import com.drugbox.dto.request.DrugDetailSaveRequest;
 import com.drugbox.dto.request.DrugSaveRequest;
 import com.drugbox.dto.request.DrugUpdateRequest;
 import com.drugbox.dto.response.DisposalResponse;
+import com.drugbox.dto.response.DrugDetailResponse;
 import com.drugbox.dto.response.DrugResponse;
 import com.drugbox.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,9 +57,9 @@ public class DrugService {
                     .location(detail.getLocation())
                     .expDate(detail.getExpDate())
                     .drugbox(drugbox)
+                    .drugInfo(getOrSaveDrugInfo(request.getName()))
                     .build();
             drugRepository.save(drug);
-            saveDrugInfoIfEmpty(request.getName());
 
             ids.add(drug.getId());
             sendDrugAddedNotificationToAllOtherDrugboxMember(user, drugbox, "약 추가 알림",
@@ -68,14 +70,30 @@ public class DrugService {
     }
 
     // 의약품 리스트 확인하기
-    public List<DrugResponse> getDrugs(Long drugboxId){
+    public List<DrugDetailResponse> getDrugs(Long drugboxId){
         getDrugboxOrThrow(drugboxId);
-        List<Drug> drugs = drugRepository.findAllByDrugboxId(drugboxId);
-        return drugs.stream()
-                .map(drug -> getDrugOrThrow(drug))
-                .filter(drug -> !drug.isInDisposalList())
-                .map(drug-> DrugToDrugResponse(drug))
+        Map<String, List<Drug>> groups = getDrugsFromDrugboxGroupedByName(drugboxId);
+        List<DrugDetailResponse> drugDetailResponses = groups.entrySet().stream()
+                .map(entry -> {
+                    String name = entry.getKey();
+                    List<DrugResponse> drugResponses = entry.getValue().stream()
+                            .map(this::getDrugOrThrow)
+                            .filter(drug -> !drug.isInDisposalList())
+                            .map(this::DrugToDrugResponse)
+                            .collect(Collectors.toList());
+                    String effect = entry.getValue().stream()
+                            .findFirst()
+                            .map(drug -> drug.getDrugInfo().getEffect())
+                            .orElse("");
+                    return DrugDetailResponse.builder()
+                            .name(name)
+                            .drugResponses(drugResponses)
+                            .effect(effect)
+                            .build();
+                })
                 .collect(Collectors.toList());
+
+        return drugDetailResponses;
     }
 
     // 의약품 사용하기
@@ -165,16 +183,12 @@ public class DrugService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_DRUG));
     }
 
-    private DrugInfo getDrugInfoOrThrow(String name){
-        return drugInfoRepository.findByName(name)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_DRUGINFO));
-    }
-
-    private void saveDrugInfoIfEmpty(String name) throws IOException, ParseException {
+    private DrugInfo getOrSaveDrugInfo(String name) throws IOException, ParseException {
         Optional<DrugInfo> drugInfo = drugInfoRepository.findByName(name);
         if(drugInfo.isEmpty()){
-            drugApiService.getDrugInfo(name);
+            return drugApiService.getDrugInfo(name);
         }
+        return drugInfo.get();
     }
 
     private User getUserOrThrow(Long userId) {
@@ -241,5 +255,10 @@ public class DrugService {
             sendNotificationToAllDrugboxMember(drugbox, "유통기한 임박 알림",
                     drugbox.getName()+"에 들어있는 "+drug.getName()+"의 유통기한이 1주일 남았습니다. 교체하세요!");
         }
+    }
+
+    public Map<String, List<Drug>> getDrugsFromDrugboxGroupedByName(Long drugboxId) {
+        List<Drug> drugs = drugRepository.findAllByDrugboxId(drugboxId);
+        return drugs.stream().collect(Collectors.groupingBy(Drug::getName));
     }
 }

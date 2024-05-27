@@ -38,6 +38,10 @@ public class Drug extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE) // delete drugbox -> delete drugs
     private Drugbox drugbox;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "druginfo_id")
+    private DrugInfo drugInfo;
+
     public void setCount(int count) {
         this.count = count;
     }
