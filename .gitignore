@@ -40,6 +40,4 @@ out/
 application.properties
 drugbox_firebase.json
 gha-creds-*.json
-seoul.geojson
-drugbin.CSV
 google-cloud-api.json
