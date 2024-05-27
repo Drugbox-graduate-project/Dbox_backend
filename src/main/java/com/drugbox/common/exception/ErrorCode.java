@@ -44,7 +44,10 @@ public enum ErrorCode {
 
     // 이미지 예외
     IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "이미지 파일은 10MB이하여야 합니다."),
-    IMAGE_TYPE_INVALID(HttpStatus.BAD_REQUEST, "이미지 파일 타입이 유효하지 않습니다.");
+    IMAGE_TYPE_INVALID(HttpStatus.BAD_REQUEST, "이미지 파일 타입이 유효하지 않습니다."),
+
+    // Map 예외
+    NOT_FOUND_MAP_RESULT(HttpStatus.NOT_FOUND, "장소 검색 결과가 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String detail;
