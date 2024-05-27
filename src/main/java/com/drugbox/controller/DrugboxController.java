@@ -28,7 +28,7 @@ public class DrugboxController {
     private final DrugboxService drugboxService;
 
     // 구급상자 추가하기 (생성)
-    @PostMapping("/add")
+    @PostMapping("")
     public ResponseEntity<IdResponse> addDrugbox(@Valid DrugboxSaveRequest request) throws IOException {
         Long drugboxId = drugboxService.addDrugbox(request, SecurityUtil.getCurrentUserId());
         IdResponse response = IdResponse.builder()
@@ -39,7 +39,7 @@ public class DrugboxController {
 
 
     // 구급상자 추가하기 (초대)
-    @PostMapping("/add/invite-code")
+    @PostMapping("/invite-code")
     public ResponseEntity<IdResponse> addDrugboxByInviteCode(@RequestParam(value="inviteCode") String inviteCode) throws IOException {
         Long drugboxId = drugboxService.addDrugboxByInviteCode(inviteCode, SecurityUtil.getCurrentUserId());
         IdResponse response = IdResponse.builder()
