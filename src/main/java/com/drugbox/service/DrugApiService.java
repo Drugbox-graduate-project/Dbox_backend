@@ -57,9 +57,9 @@ public class DrugApiService {
         return sb.toString();
     }
 
-    public void getDrugInfo(String drugName) throws IOException, ParseException{
+    public DrugInfo getDrugInfo(String drugName) throws IOException, ParseException{
         String result = getDrugApi(createUrlForDrugDetail(drugName));
-        addDrugInfo(parseDrugInfo(result));
+        return addDrugInfo(parseDrugInfo(result));
     }
 
     public URL createUrlForDrugDetail(String name) throws IOException{
@@ -78,14 +78,14 @@ public class DrugApiService {
         return (JSONArray) object.get("items");
     }
 
-    public void addDrugInfo(JSONArray array){
+    public DrugInfo addDrugInfo(JSONArray array){
         JSONObject getInfo = (JSONObject) array.get(0);
         DrugInfo drugInfo = DrugInfo.builder()
                 .name((String)getInfo.get("itemName"))
                 .effect((String) getInfo.get("efcyQesitm"))
                 .updateDate(LocalDate.parse((String)getInfo.get("updateDe")))
                 .build();
-        drugInfoRepository.save(drugInfo);
+        return drugInfoRepository.save(drugInfo);
     }
 
     @Scheduled(cron="0 0 0 */14 * ?")

@@ -4,7 +4,7 @@ import com.drugbox.common.auth.SecurityUtil;
 import com.drugbox.dto.request.DrugSaveRequest;
 import com.drugbox.dto.request.DrugUpdateRequest;
 import com.drugbox.dto.response.DisposalResponse;
-import com.drugbox.dto.response.DrugResponse;
+import com.drugbox.dto.response.DrugDetailResponse;
 import com.drugbox.dto.response.IdResponse;
 import com.drugbox.service.DrugApiService;
 import com.drugbox.service.DrugService;
@@ -29,8 +29,8 @@ public class DrugController {
     private final DrugApiService drugApiService;
 
     @GetMapping("")
-    public ResponseEntity<List<DrugResponse>> getDrugs(@RequestParam(value="drugboxId") Long drugboxId) {
-        List<DrugResponse> response = drugService.getDrugs(drugboxId);
+    public ResponseEntity<List<DrugDetailResponse>> getDrugs(@RequestParam(value="drugboxId") Long drugboxId) {
+        List<DrugDetailResponse> response = drugService.getDrugs(drugboxId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -57,7 +57,7 @@ public class DrugController {
     }
 
     @GetMapping("/search-result")
-    public ResponseEntity<List<String>> searchDrugs(@RequestParam(value="name") String name) throws IOException, ParseException {
+    public ResponseEntity<List<String>> searchDrugInfoByName(@RequestParam(value="name") String name) throws IOException, ParseException {
         List<String> response = drugApiService.getSearchDrugs(name);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
