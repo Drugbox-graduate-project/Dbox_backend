@@ -3,7 +3,7 @@ package com.drugbox.controller;
 import com.drugbox.common.exception.CustomException;
 import com.drugbox.common.exception.ErrorCode;
 import com.drugbox.common.jwt.TokenDto;
-import com.drugbox.common.oauth.platform.google.GoogleLoginParams;
+import com.drugbox.dto.request.OAuthLoginRequest;
 import com.drugbox.dto.request.UserLoginRequest;
 import com.drugbox.dto.response.IdResponse;
 import com.drugbox.service.AuthService;
@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @Slf4j
@@ -26,17 +27,17 @@ public class AuthController {
     private final FCMTokenService fcmTokenService;
 
     @PostMapping("login/google")
-    public ResponseEntity<TokenDto> googleLogin(@RequestBody GoogleLoginParams params){ // auth code
-        checkFCMToken(params.getFcmToken());
-        TokenDto response = authService.googleLogin(params);
-        fcmTokenService.saveToken(response.getUserId(), params.getFcmToken());
+    public ResponseEntity<TokenDto> googleLogin(@RequestBody @Valid OAuthLoginRequest request){ // auth code
+        checkFCMToken(request.getFcmToken());
+        TokenDto response = authService.googleLogin(request);
+        fcmTokenService.saveToken(response.getUserId(), request.getFcmToken());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/redirect/google") // 백엔드 자체 테스트용
-    public void googleRedirect(@RequestParam("code") String authCode){
+    public ResponseEntity<TokenDto> googleRedirect(@RequestParam("code") String authCode){
         log.info("\n  AuthCode:" + authCode);
-        //return ResponseEntity.ok(authService.getGoogleAccessToken(authCode));
+        return ResponseEntity.ok(authService.getGoogleAccessToken(authCode));
     }
 
     @PostMapping("/signup/pw")
