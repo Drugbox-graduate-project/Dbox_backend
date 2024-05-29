@@ -5,12 +5,13 @@ import com.drugbox.common.exception.ErrorCode;
 import com.drugbox.common.jwt.TokenDto;
 import com.drugbox.common.jwt.TokenProvider;
 import com.drugbox.common.oauth.OAuthInfoResponse;
-import com.drugbox.common.oauth.OAuthLoginParams;
 import com.drugbox.common.oauth.OAuthProvider;
 import com.drugbox.common.oauth.RequestOAuthInfoService;
 import com.drugbox.common.oauth.dto.OAuthUserProfile;
+import com.drugbox.common.oauth.platform.google.GoogleInfoResponse;
 import com.drugbox.common.oauth.platform.google.GoogleLoginParams;
 import com.drugbox.domain.User;
+import com.drugbox.dto.request.OAuthLoginRequest;
 import com.drugbox.dto.request.UserLoginRequest;
 import com.drugbox.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +37,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RequestOAuthInfoService requestOAuthInfoService;
-    private final EntityManager em;
 
-    public TokenDto googleLogin(OAuthLoginParams params){
-        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
-        Map<String, Object> idAndIsNew = findOrCreateUser(oAuthInfoResponse);
+    public TokenDto googleLogin(OAuthLoginRequest request){
+        return makeTokenDto(findOrCreateUser(new GoogleInfoResponse(request.getAccessToken(), request.getIdToken())));
+    }
+
+    public TokenDto getGoogleAccessToken(String authCode){
+        System.out.println("\n==== Auth Code:"+authCode+"\n");
+        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(new GoogleLoginParams(authCode));
+        return makeTokenDto(findOrCreateUser(oAuthInfoResponse));
+    }
+
+    private TokenDto makeTokenDto(Map<String, Object> idAndIsNew){
         Long userId = (Long) idAndIsNew.get("userId");
         Boolean isNewUser = (Boolean) idAndIsNew.get("isNewUser");
         TokenDto token = tokenProvider.generateTokenDto(userId.toString());
@@ -79,11 +86,6 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public TokenDto getGoogleAccessToken(String authCode){
-        System.out.println("\n==== Auth Code:"+authCode+"\n");
-        GoogleLoginParams params = new GoogleLoginParams(authCode, null);
-        return googleLogin(params);
-    }
 
     public Long signup(UserLoginRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {

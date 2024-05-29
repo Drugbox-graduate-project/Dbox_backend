@@ -12,10 +12,8 @@ import org.springframework.util.MultiValueMap;
 @NoArgsConstructor
 public class GoogleLoginParams implements OAuthLoginParams {
     private String authorizationCode;
-    private String fcmToken;
 
-    public GoogleLoginParams(String authorizationCode, String fcmToken) {
-        this.fcmToken = fcmToken;
+    public GoogleLoginParams(String authorizationCode) {
         this.authorizationCode = authorizationCode;
     }
 
