@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,6 +133,7 @@ public class MapService {
         }
     }
 
+    @Cacheable("addresses")
     public List<BinLocationResponse> getSeoulDrugBinLocations(){
         List<BinLocation> binLocations = binLocationRepository.findAll();
         return binLocations.stream()
@@ -139,6 +141,7 @@ public class MapService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("addresses")
     public List<BinLocationResponse> getDivisionDrugBinLocations(String addrLvl1, String addrLvl2){
         List<BinLocation> binLocations = new ArrayList<>();
         if(addrLvl2 == null){
