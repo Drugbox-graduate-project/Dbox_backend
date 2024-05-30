@@ -11,6 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 @RequiredArgsConstructor
@@ -69,6 +72,7 @@ public class SecurityConfig {
             .addFilter(corsConfig.corsFilter())
             .authorizeRequests()
             .antMatchers(WHITE_LIST).permitAll()
+            .requestMatchers(forPort(9292)).anonymous() // actuator
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
             // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
@@ -76,5 +80,9 @@ public class SecurityConfig {
             .apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
+    }
+
+    private RequestMatcher forPort(final int port) {
+        return (HttpServletRequest request) -> { return port == request.getLocalPort(); };
     }
 }

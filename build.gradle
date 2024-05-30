@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.1.4'
+    id "com.gorylenko.gradle-git-properties" version "2.2.4" // actutator-git
 }
 
 group = 'com'
@@ -26,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // data
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -45,6 +47,9 @@ dependencies {
 
     // Swagger
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+    // Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // Google Cloud Platform (GCP)
     implementation 'org.springframework.cloud:spring-cloud-gcp-starter:1.2.5.RELEASE'
@@ -76,4 +81,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+springBoot {
+    buildInfo()
 }
