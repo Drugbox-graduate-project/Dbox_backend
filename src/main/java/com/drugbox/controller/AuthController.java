@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup/pw")
-    public ResponseEntity<IdResponse> signup(@RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<IdResponse> signup(@RequestBody @Valid UserLoginRequest userLoginRequest) {
         Long userId = authService.signup(userLoginRequest);
         IdResponse response = IdResponse.builder()
                 .id(userId)
@@ -50,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/pw")
-    public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<TokenDto> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
         return ResponseEntity.ok(authService.login(userLoginRequest));
     }
 

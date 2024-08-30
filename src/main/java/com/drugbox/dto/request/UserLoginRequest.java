@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLoginRequest {
 
+    @NotBlank(message = "이메일은 공백일 수 없습니다.")
     private String email;
+    @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
     private String password;
 
     public User toUser(PasswordEncoder passwordEncoder) {
