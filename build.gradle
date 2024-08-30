@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.1.4'
-    id "com.gorylenko.gradle-git-properties" version "2.2.4" // actutator-git
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 
 group = 'com'
@@ -20,6 +20,10 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    jcenter()
 }
 
 dependencies {
@@ -77,6 +81,8 @@ dependencies {
 
     // FCM
     implementation 'com.google.firebase:firebase-admin:9.1.1'
+
+    implementation 'org.ajoberstar.grgit:grgit-core:4.1.0'
 }
 
 tasks.named('test') {
