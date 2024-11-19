@@ -50,8 +50,11 @@ public class AuthController {
     }
 
     @PostMapping("/login/pw")
-    public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest userLoginRequest) {
-        return ResponseEntity.ok(authService.login(userLoginRequest));
+    public ResponseEntity<TokenDto> login(@RequestBody UserLoginRequest request) {
+        checkFCMToken(request.getFcmToken());
+        TokenDto response = authService.login(request);
+        fcmTokenService.saveToken(response.getUserId(), request.getFcmToken());
+        return ResponseEntity.ok(response);
     }
 
     // AccessToken 재발급

@@ -15,6 +15,7 @@ public class UserLoginRequest {
 
     private String email;
     private String password;
+    private String fcmToken;
 
     public User toUser(PasswordEncoder passwordEncoder) {
         return User.builder()
